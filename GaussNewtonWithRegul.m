@@ -12,7 +12,7 @@ flag_out = 0;
 damp=0.25;
 
 value_fval=zeros(1,iter_max+1);
-TReg_min=zeros(1,iter_max);
+TReg_min=zeros(1,iter_max);                                 % WHY NO +1?
 f0 = theta(y,lm_func(x,init_parameters'));
 value_fval(1,1)= f0;
 %pause
@@ -49,7 +49,7 @@ for iter = 1:iter_max
         [delta_a, Reg_min, reg_param ] = gn_regul(j,d',regul);
          %delta_a
          %pause
-    elseif regul==3
+    elseif regul==3                                        
         [delta_a, Reg_min, reg_param ] = gn_regul(j,d',regul);
     elseif regul==4
         [delta_a, Reg_min, reg_param ] = gn_regul(j,d',regul);
@@ -64,35 +64,20 @@ for iter = 1:iter_max
     init_parameters = init_parameters + damp*alp*delta_a';
     obfun_previous = lm_func(x,init_parameters_0');
     obfun_current = lm_func(x,init_parameters');
-    
-%     size(y)
-%     size(obfun_previous)
-    
-%    pause
+
+    %Checkking if we're heading in the right direction
     f0 = theta(y,obfun_previous);
     f1 = theta(y,obfun_current);
-    if (f0>f1) value_fval(1,iter+1) = f1;  end;
-    
-% %     value_fval(1,iter+1)-value_fval(1,iter)
-% %     
-% %     pause
+    if (f0>f1) value_fval(1,iter+1) = f1;  end
     
     
     if (value_fval(1,iter) - value_fval(1,iter+1))< tolerance_fun;  flag_out = 1; end;
     
-% %     if(f1<f0)
-% %         disp('tak')
-% %     else
-% %         disp('armio')
-% %     end;
     
- %   pause
 
 	while(f1 >= f0)
-    %%while(f0 > f1)    
 		iarm=iarm+1;
 		alp=alp/2;
-        %disp('tak')
         init_parameters = init_parameters_0 + damp*alp*delta_a';
         obfun_current = lm_func(x,init_parameters');
 		f1 = theta(y,obfun_current);
@@ -109,17 +94,11 @@ for iter = 1:iter_max
     end
    
     if (iter==iter_max) flag_out=1; end;
-    %disp('tutaj')
-    %if (flag_out) disp('tak');break; end;
-    %pause
-   %norm(init_parameters)
+
 
    if((abs(delta_a(1)) < tolerance && abs(delta_a(2)) < tolerance && abs(delta_a(3)) < tolerance && abs(delta_a(4)) < tolerance && abs(delta_a(5)) < tolerance)||flag_out)
     if (flag_out) disp("not converged!"); out.info = 0; end
     if (~flag_out) disp("converged!"); out.info = 1; end
-    %%pause
-    %%iteration_to_conv = iter;
-    %%calculated_parameters = init_parameters';
     
     out.iteration_to_conv = iter;
     out.calculated_parameters = init_parameters';
@@ -127,9 +106,6 @@ for iter = 1:iter_max
     out.f_val_min = theta(y,lm_func(x,init_parameters'));
     out.tabfv = value_fval;
     out.reg = TReg_min;
-    %TReg_min
-    %value_fval
-    %pause
     break;
    end
 end
